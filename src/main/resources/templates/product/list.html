@@ -23,9 +23,39 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
 
+        <form th:action="@{/products}" method="get" class="row g-3 align-items-end mb-4">
+            <div class="col-md-5">
+                <label for="keyword" class="form-label">Cari Nama Produk</label>
+                <input
+                    type="text"
+                    id="keyword"
+                    name="keyword"
+                    class="form-control"
+                    placeholder="Masukkan nama produk"
+                    th:value="${keyword}">
+            </div>
+            <div class="col-md-4">
+                <label for="category" class="form-label">Filter Kategori</label>
+                <select id="category" name="category" class="form-select">
+                    <option value="">Semua kategori</option>
+                    <option th:each="category, iterStat : ${categories}"
+                            th:value="${iterStat.index}"
+                            th:selected="${selectedCategory != null and selectedCategory == iterStat.index}"
+                            th:text="${category.displayName}">
+                        Kategori
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100">Cari</button>
+                <a th:href="@{/products}" class="btn btn-outline-secondary w-100">Reset</a>
+            </div>
+        </form>
+
         <!-- Product Count -->
         <p class="text-muted">
-            Total produk: <strong th:text="${#lists.size(products)}">0</strong>
+            Menampilkan <strong th:text="${startItem}">0</strong>-<strong th:text="${endItem}">0</strong>
+            dari <strong th:text="${totalItems}">0</strong> produk
         </p>
 
         <!-- Product Table -->
@@ -44,7 +74,7 @@
                 </thead>
                 <tbody>
                     <tr th:each="product, iterStat : ${products}">
-                        <td th:text="${iterStat.index + 1}">1</td>
+                        <td th:text="${productPage.number * productPage.size + iterStat.index + 1}">1</td>
                         <td th:text="${product.name}">Nama Produk</td>
                         <td th:text="${product.category?.displayName}">Kategori</td>
                         <td th:text="${'Rp ' + #numbers.formatDecimal(product.price, 0, 'POINT', 0, 'COMMA')}">Rp 0</td>
@@ -68,9 +98,36 @@
 
         <!-- Empty State -->
         <div th:if="${#lists.isEmpty(products)}" class="text-center py-5">
-            <p class="text-muted fs-5">Belum ada produk.</p>
-            <a th:href="@{/products/new}" class="btn btn-primary">Tambah Produk Pertama</a>
+            <p class="text-muted fs-5">Tidak ada produk.</p>
+            <a th:if="${hasFilter}" th:href="@{/products}" class="btn btn-outline-secondary">Reset Pencarian</a>
+            <a th:unless="${hasFilter}" th:href="@{/products/new}" class="btn btn-primary">Tambah Produk Pertama</a>
         </div>
+
+        <nav th:if="${productPage.totalPages > 1}" aria-label="Navigasi halaman produk" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${!productPage.hasPrevious()} ? ' disabled'">
+                    <a class="page-link"
+                       th:href="@{/products(page=${currentPage - 1}, keyword=${keyword}, category=${selectedCategory})}">
+                        Previous
+                    </a>
+                </li>
+                <li th:each="pageNumber : ${pageNumbers}"
+                    class="page-item"
+                    th:classappend="${pageNumber == currentPage} ? ' active'">
+                    <a class="page-link"
+                       th:href="@{/products(page=${pageNumber}, keyword=${keyword}, category=${selectedCategory})}"
+                       th:text="${pageNumber + 1}">
+                        1
+                    </a>
+                </li>
+                <li class="page-item" th:classappend="${!productPage.hasNext()} ? ' disabled'">
+                    <a class="page-link"
+                       th:href="@{/products(page=${currentPage + 1}, keyword=${keyword}, category=${selectedCategory})}">
+                        Next
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
 
     <footer th:replace="~{fragments/layout :: footer}"></footer>

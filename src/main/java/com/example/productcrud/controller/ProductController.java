@@ -3,9 +3,15 @@ package com.example.productcrud.controller;
 import com.example.productcrud.model.Category;
 import com.example.productcrud.model.Product;
 import com.example.productcrud.model.User;
+import com.example.productcrud.repository.ProductRepository;
 import com.example.productcrud.repository.UserRepository;
 import com.example.productcrud.service.ProductService;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.IntStream;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -30,14 +36,66 @@ public class ProductController {
     }
 
     @GetMapping("/")
-    public String index() {
-        return "redirect:/products";
+    public String index(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        User currentUser = getCurrentUser(userDetails);
+        long totalProducts = productService.countByOwner(currentUser);
+        long activeProducts = productService.countActiveByOwner(currentUser);
+        long inactiveProducts = productService.countInactiveByOwner(currentUser);
+        long totalInventoryValue = productService.sumInventoryValueByOwner(currentUser);
+        List<ProductRepository.CategoryCountProjection> categoryStats =
+                productService.countProductsByCategory(currentUser);
+        List<Product> lowStockProducts = productService.findLowStockProducts(currentUser);
+
+        model.addAttribute("totalProducts", totalProducts);
+        model.addAttribute("activeProducts", activeProducts);
+        model.addAttribute("inactiveProducts", inactiveProducts);
+        model.addAttribute("totalInventoryValue", totalInventoryValue);
+        model.addAttribute("categoryStats", categoryStats);
+        model.addAttribute("lowStockProducts", lowStockProducts);
+        model.addAttribute("isEmptyProducts", totalProducts == 0);
+        return "index";
     }
 
     @GetMapping("/products")
-    public String listProducts(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+    public String listProducts(@AuthenticationPrincipal UserDetails userDetails,
+                               @RequestParam(required = false) String keyword,
+                               @RequestParam(required = false) Integer category,
+                               @RequestParam(defaultValue = "0") int page,
+                               Model model) {
         User currentUser = getCurrentUser(userDetails);
-        model.addAttribute("products", productService.findAllByOwner(currentUser));
+        String normalizedKeyword = keyword == null ? "" : keyword.trim();
+        Category selectedCategory = Category.fromIndex(category);
+        int currentPage = Math.max(page, 0);
+        PageRequest pageable = PageRequest.of(currentPage, 10, Sort.by(Sort.Direction.DESC, "id"));
+        Page<Product> productPage = productService.findAllByOwnerAndFilters(
+                currentUser, normalizedKeyword, selectedCategory, pageable);
+
+        if (currentPage > 0 && productPage.getTotalPages() > 0 && currentPage >= productPage.getTotalPages()) {
+            currentPage = productPage.getTotalPages() - 1;
+            pageable = PageRequest.of(currentPage, 10, Sort.by(Sort.Direction.DESC, "id"));
+            productPage = productService.findAllByOwnerAndFilters(
+                    currentUser, normalizedKeyword, selectedCategory, pageable);
+        }
+
+        long startItem = productPage.getTotalElements() == 0 ? 0 : ((long) productPage.getNumber() * productPage.getSize()) + 1;
+        long endItem = productPage.getTotalElements() == 0
+                ? 0
+                : startItem + productPage.getNumberOfElements() - 1;
+        List<Integer> pageNumbers = IntStream.range(0, productPage.getTotalPages())
+                .boxed()
+                .toList();
+
+        model.addAttribute("products", productPage.getContent());
+        model.addAttribute("productPage", productPage);
+        model.addAttribute("pageNumbers", pageNumbers);
+        model.addAttribute("currentPage", productPage.getNumber());
+        model.addAttribute("startItem", startItem);
+        model.addAttribute("endItem", endItem);
+        model.addAttribute("totalItems", productPage.getTotalElements());
+        model.addAttribute("categories", Category.values());
+        model.addAttribute("keyword", normalizedKeyword);
+        model.addAttribute("selectedCategory", selectedCategory == null ? null : category);
+        model.addAttribute("hasFilter", !normalizedKeyword.isBlank() || selectedCategory != null);
         return "product/list";
     }
 

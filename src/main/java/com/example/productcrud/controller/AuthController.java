@@ -63,6 +63,8 @@ public class AuthController {
         // Simpan user baru dengan password ter-encode
         User user = new User();
         user.setUsername(registerRequest.getUsername().trim());
+        user.setFullName(registerRequest.getFullName() == null ? null : registerRequest.getFullName().trim());
+        user.setEmail(registerRequest.getEmail() == null ? null : registerRequest.getEmail().trim());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         userRepository.save(user);
 

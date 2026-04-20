@@ -27,13 +27,20 @@
                     <a class="nav-link" th:href="@{/products}">Products</a>
                 </li>
             </ul>
-            <div class="d-flex align-items-center" sec:authorize="isAuthenticated()">
-                <span class="text-light me-3">
+            <div class="dropdown" sec:authorize="isAuthenticated()">
+                <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Halo, <strong th:text="${#authentication.name}">User</strong>
-                </span>
-                <form th:action="@{/logout}" method="post" class="d-inline">
-                    <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
-                </form>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" th:href="@{/profile}">Lihat Profil</a></li>
+                    <li><a class="dropdown-item" th:href="@{/profile/edit}">Edit Profil</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form th:action="@{/logout}" method="post" class="px-3 py-1">
+                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">Logout</button>
+                        </form>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
