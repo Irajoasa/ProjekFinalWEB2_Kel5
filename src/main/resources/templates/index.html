@@ -1,128 +1,188 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: header}">
+<html lang="id"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:block th:replace="~{fragments/layout :: header}">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-    <div class="container pb-5">
-        <section class="dashboard-hero card mb-4">
-            <div class="card-body p-4 p-lg-5">
-                <div class="row align-items-center g-4">
-                    <div class="col-lg-8">
-                        <p class="text-uppercase dashboard-eyebrow mb-2">Dashboard Produk</p>
-                        <h1 class="display-6 fw-bold mb-3">Ringkasan inventori milikmu ada di sini.</h1>
-                        <p class="lead text-muted mb-0">
-                            Pantau jumlah produk, nilai inventory, distribusi kategori, dan stok kritis dalam satu halaman utama.
-                        </p>
-                    </div>
-                    <div class="col-lg-4 text-lg-end">
-                        <a th:href="@{/products}" class="btn btn-dark btn-lg me-2 mb-2">Lihat Semua Produk</a>
-                        <a th:href="@{/products/new}" class="btn btn-success btn-lg mb-2">Tambah Produk</a>
-                    </div>
-                </div>
+<body class="bg-gray-100">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="max-w-7xl mx-auto px-4 pb-10">
+
+    <!-- HERO -->
+    <section class="bg-white rounded-xl shadow p-6 mb-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+
+            <div>
+                <p class="uppercase text-sm text-gray-500 mb-2">
+                    Dashboard Produk
+                </p>
+
+                <h1 class="text-3xl font-bold mb-3">
+                    Ringkasan inventori milikmu ada di sini.
+                </h1>
+
+                <p class="text-gray-600">
+                    Pantau jumlah produk, nilai inventory, distribusi kategori,
+                    dan stok kritis dalam satu halaman utama.
+                </p>
             </div>
-        </section>
 
-        <div th:if="${isEmptyProducts}" class="alert alert-info border-0 shadow-sm mb-4" role="alert">
-            <strong>Yuk, tambah produk pertamamu!</strong>
-            Mulai isi inventori supaya statistik dan pemantauan stok muncul di dashboard ini.
+            <div class="flex gap-3">
+                <a th:href="@{/products}"
+                   class="bg-gray-800 text-white px-5 py-3 rounded-lg hover:bg-gray-700">
+                    Lihat Semua Produk
+                </a>
+
+                <a th:href="@{/products/new}"
+                   class="bg-green-600 text-white px-5 py-3 rounded-lg hover:bg-green-700">
+                    Tambah Produk
+                </a>
+            </div>
+
         </div>
+    </section>
 
-        <section class="row g-4 mb-4">
-            <div class="col-md-6 col-xl-3">
-                <div class="card dashboard-stat h-100">
-                    <div class="card-body">
-                        <p class="dashboard-label">Total Produk</p>
-                        <h2 class="dashboard-value" th:text="${totalProducts}">0</h2>
-                        <p class="text-muted mb-0">Jumlah semua produk yang kamu miliki.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-xl-3">
-                <div class="card dashboard-stat h-100">
-                    <div class="card-body">
-                        <p class="dashboard-label">Total Nilai Inventory</p>
-                        <h2 class="dashboard-value"
-                            th:text="${'Rp ' + #numbers.formatDecimal(totalInventoryValue, 0, 'POINT', 0, 'COMMA')}">
-                            Rp 0
-                        </h2>
-                        <p class="text-muted mb-0">Akumulasi harga dikali stok seluruh produk.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-xl-3">
-                <div class="card dashboard-stat h-100">
-                    <div class="card-body">
-                        <p class="dashboard-label">Produk Aktif</p>
-                        <h2 class="dashboard-value text-success" th:text="${activeProducts}">0</h2>
-                        <p class="text-muted mb-0">Produk yang sedang aktif dijual.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-xl-3">
-                <div class="card dashboard-stat h-100">
-                    <div class="card-body">
-                        <p class="dashboard-label">Produk Tidak Aktif</p>
-                        <h2 class="dashboard-value text-secondary" th:text="${inactiveProducts}">0</h2>
-                        <p class="text-muted mb-0">Produk yang saat ini tidak aktif.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <section class="row g-4">
-            <div class="col-lg-6">
-                <div class="card h-100 dashboard-panel">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h3 class="h5 mb-0">Produk per Kategori</h3>
-                            <span class="badge text-bg-light">Ringkasan</span>
-                        </div>
-                        <div th:if="${#lists.isEmpty(categoryStats)}" class="text-muted">
-                            Belum ada data kategori.
-                        </div>
-                        <div th:unless="${#lists.isEmpty(categoryStats)}" class="list-group list-group-flush">
-                            <div th:each="item : ${categoryStats}"
-                                 class="list-group-item px-0 d-flex justify-content-between align-items-center border-dashed">
-                                <span th:text="${item.category.displayName}">Kategori</span>
-                                <span class="badge rounded-pill text-bg-dark" th:text="${item.total}">0</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="card h-100 dashboard-panel">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h3 class="h5 mb-0">Low Stock</h3>
-                            <span class="badge text-bg-warning">Stock &lt; 5</span>
-                        </div>
-                        <div th:if="${#lists.isEmpty(lowStockProducts)}" class="text-muted">
-                            Tidak ada produk dengan stok kritis.
-                        </div>
-                        <div th:unless="${#lists.isEmpty(lowStockProducts)}" class="list-group list-group-flush">
-                            <a th:each="product : ${lowStockProducts}"
-                               th:href="@{/products/{id}(id=${product.id})}"
-                               class="list-group-item list-group-item-action px-0 border-dashed">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <div class="fw-semibold" th:text="${product.name}">Nama Produk</div>
-                                        <small class="text-muted" th:text="${product.category != null ? product.category.displayName : 'Tanpa kategori'}">
-                                            Kategori
-                                        </small>
-                                    </div>
-                                    <span class="badge rounded-pill text-bg-danger" th:text="${product.stock + ' pcs'}">0 pcs</span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <!-- EMPTY ALERT -->
+    <div th:if="${isEmptyProducts}"
+         class="bg-blue-100 text-blue-800 p-4 rounded-lg shadow mb-6">
+        <strong>Yuk, tambah produk pertamamu!</strong>
+        Mulai isi inventori supaya statistik muncul di dashboard.
     </div>
 
-    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+    <!-- STAT CARD -->
+    <section class="grid md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
+
+        <div class="bg-white rounded-xl shadow p-5">
+            <p class="text-gray-500 text-sm">Total Produk</p>
+            <h2 class="text-3xl font-bold"
+                th:text="${totalProducts}">0</h2>
+            <p class="text-gray-500 text-sm">Jumlah semua produk.</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-5">
+            <p class="text-gray-500 text-sm">Total Nilai Inventory</p>
+            <h2 class="text-3xl font-bold"
+                th:text="${'Rp ' + #numbers.formatDecimal(totalInventoryValue,0,'POINT',0,'COMMA')}">
+                Rp 0
+            </h2>
+            <p class="text-gray-500 text-sm">Akumulasi harga × stok.</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-5">
+            <p class="text-gray-500 text-sm">Produk Aktif</p>
+            <h2 class="text-3xl font-bold text-green-600"
+                th:text="${activeProducts}">0</h2>
+            <p class="text-gray-500 text-sm">Produk sedang dijual.</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-5">
+            <p class="text-gray-500 text-sm">Produk Tidak Aktif</p>
+            <h2 class="text-3xl font-bold text-gray-500"
+                th:text="${inactiveProducts}">0</h2>
+            <p class="text-gray-500 text-sm">Produk nonaktif.</p>
+        </div>
+
+    </section>
+
+
+    <!-- PANEL -->
+    <section class="grid lg:grid-cols-2 gap-6">
+
+        <!-- CATEGORY -->
+        <div class="bg-white rounded-xl shadow p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-semibold text-lg">
+                    Produk per Kategori
+                </h3>
+                <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
+                    Ringkasan
+                </span>
+            </div>
+
+            <div th:if="${#lists.isEmpty(categoryStats)}"
+                 class="text-gray-500">
+                Belum ada data kategori.
+            </div>
+
+            <div th:unless="${#lists.isEmpty(categoryStats)}"
+                 class="divide-y">
+
+                <div th:each="item : ${categoryStats}"
+                     class="flex justify-between py-3">
+
+                    <span th:text="${item.category.displayName}">
+                        Kategori
+                    </span>
+
+                    <span class="bg-gray-800 text-white px-3 py-1 rounded-full text-sm"
+                          th:text="${item.total}">
+                        0
+                    </span>
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- LOW STOCK -->
+        <div class="bg-white rounded-xl shadow p-6">
+
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-semibold text-lg">
+                    Low Stock
+                </h3>
+
+                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm">
+                    Stock &lt; 5
+                </span>
+            </div>
+
+            <div th:if="${#lists.isEmpty(lowStockProducts)}"
+                 class="text-gray-500">
+                Tidak ada produk dengan stok kritis.
+            </div>
+
+            <div th:unless="${#lists.isEmpty(lowStockProducts)}"
+                 class="divide-y">
+
+                <a th:each="product : ${lowStockProducts}"
+                   th:href="@{/products/{id}(id=${product.id})}"
+                   class="flex justify-between items-center py-3 hover:bg-gray-50 rounded-lg px-2">
+
+                    <div>
+                        <div class="font-semibold"
+                             th:text="${product.name}">
+                            Nama Produk
+                        </div>
+
+                        <small class="text-gray-500"
+                               th:text="${product.category != null ? product.category.displayName : 'Tanpa kategori'}">
+                            Kategori
+                        </small>
+                    </div>
+
+                    <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm"
+                          th:text="${product.stock + ' pcs'}">
+                        0 pcs
+                    </span>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
 </body>
 </html>

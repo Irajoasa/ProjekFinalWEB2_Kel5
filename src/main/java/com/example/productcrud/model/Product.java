@@ -17,9 +17,14 @@ public class Product {
     @Column(nullable = false, length = 200)
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 50)
+   @ManyToOne
+   @JoinColumn (name ="category_id")
     private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;
+
 
     private long price;
 
@@ -33,9 +38,10 @@ public class Product {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
-    private User owner;
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDate.now();
+    }
 
     public Product() {
     }

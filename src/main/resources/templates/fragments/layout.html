@@ -1,58 +1,79 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 
 <!-- Header Fragment -->
 <head th:fragment="header">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product CRUD</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link th:href="@{/css/style.css}" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <!-- Navbar Fragment -->
-<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark mb-4"
-     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-    <div class="container">
-        <a class="navbar-brand" th:href="@{/}">Product CRUD</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/}">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/products}">Products</a>
-                </li>
-            </ul>
-            <div class="dropdown" sec:authorize="isAuthenticated()">
-                <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Halo, <strong th:text="${#authentication.name}">User</strong>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" th:href="@{/profile}">Lihat Profil</a></li>
-                    <li><a class="dropdown-item" th:href="@{/profile/edit}">Edit Profil</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <form th:action="@{/logout}" method="post" class="px-3 py-1">
-                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">Logout</button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
+<nav th:fragment="navbar" class="bg-gray-800 text-white shadow mb-4">
+
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+
+        <a th:href="@{/}" class="text-lg font-bold">
+            Product CRUD
+        </a>
+
+        <div class="space-x-4 hidden md:flex">
+            <a th:href="@{/}" class="hover:text-gray-300">Home</a>
+            <a th:href="@{/product}" class="hover:text-gray-300">Products</a>
+            <a th:href="@{/categories}" class="hover:text-gray-300">Category</a>
         </div>
+
+            <div class="relative" sec:authorize="isAuthenticated()">
+                <button onclick="toggleDropdown()"
+                        class="bg-gray-700 px-3 py-2 rounded hover:bg-gray-600">
+                    Halo, <span th:text="${#authentication.name}">User</span>
+                </button>
+                <div id="dropdownMenu"
+                class="hidden absolute right-0 mt-2 w-48 bg-white text-black rounded-lg shadow-lg">
+                    <a th:href="@{/profile}"
+                       class="block px-4 py-2 hover:bg-gray-100">
+                        Lihat Profil
+                    </a>
+                    <a th:href="@{/profile}"
+                       class="block px-4 py-2 hover:bg-gray-100">
+                        Edit Profil
+                    </a>
+
+                    <div class="border-t"></div>
+
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit"
+                                class="w-full text-left px-4 py hover:bg-red-100 text-red-100">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
     </div>
 </nav>
-
-<!-- Footer Fragment -->
-<footer th:fragment="footer">
-    <div class="container">
-        <hr>
-        <p class="text-center text-muted py-3">Product CRUD - Praktikum JPA Fundamentals - 2026</p>
+<footer th:fragment="footer" class="mt-10">
+    <div class="max-w-7xl mx-auto px-4">
+        <hr class="mb-4">
+        <p clas="text-center text-gray-500 py-3">
+            Product CRUD - Praktikum JPA Fundamental - 2026
+        </p>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toogleDropdown() {
+        document.getElementById("dropdownMenu")
+        classList.toogle("hidden");
+        }
+        windown.addEventListener("click",function(e){
+        const button = document.querySelector("button[onclick='toogleDropdown()']");
+        const button = document.getElementById("dropdownMenu");
+        if (!button.constains(e.target) && !menu.constains(e.target)) {
+        menu.classList.add("hidden");
+        }
+        });
+    </script>
 </footer>
-
 </html>

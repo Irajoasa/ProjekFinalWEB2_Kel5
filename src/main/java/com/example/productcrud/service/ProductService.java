@@ -1,18 +1,28 @@
 package com.example.productcrud.service;
 
-import com.example.productcrud.model.Category;
+import com.example.productcrud.repository.CategoryRepository;
 import com.example.productcrud.model.Product;
 import com.example.productcrud.model.User;
 import com.example.productcrud.repository.ProductRepository;
+import com.example.productcrud.model.Category;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
-
 @Service
 public class ProductService {
+@Autowired
+private CategoryRepository categoryRepository;
+
+public Category findCategoryById(Long id) {
+    return categoryRepository.findById(id).orElse(null);
+}
+
+public List<Category> findAllCategories() {
+    return categoryRepository.findAll();
+}
 
     private final ProductRepository productRepository;
 
