@@ -40,12 +40,12 @@ public class ProductController {
     @GetMapping("/products")
     public String listProducts(@AuthenticationPrincipal UserDetails userDetails,
                                @RequestParam(required = false) String keyword,
-                               @RequestParam(required = false) Integer category,
+                               @RequestParam(required = false) Long category,
                                @RequestParam(defaultValue = "0") int page,
                                Model model) {
         User currentUser = getCurrentUser(userDetails);
         String normalizedKeyword = keyword == null ? "" : keyword.trim();
-        Category selectedCategory = (category !=null)? categoryService.findByIdAndUser(Long.valueOf(category), currentUser): null;
+        Category selectedCategory = category != null ? categoryService.findByIdAndUser(category, currentUser) : null;
         int currentPage = Math.max(page, 0);
         PageRequest pageable = PageRequest.of(currentPage, 10, Sort.by(Sort.Direction.DESC, "id"));
         Page<Product> productPage = productService.findAllByOwnerAndFilters(
@@ -125,11 +125,12 @@ public class ProductController {
         model.addAttribute("categoryStats", categoryStats);
         model.addAttribute("lowStockProducts", lowStockProducts);
         model.addAttribute("isEmptyProducts", totalProducts == 0);
-        return "product/index";
+        return "index";
     }
 
     @PostMapping("/products/save")
     public String saveProduct(@ModelAttribute Product product,
+                              @RequestParam(required = false) Long categoryId,
                               @AuthenticationPrincipal UserDetails userDetails,
                               RedirectAttributes redirectAttributes) {
         User currentUser = getCurrentUser(userDetails);
@@ -141,6 +142,17 @@ public class ProductController {
                 redirectAttributes.addFlashAttribute("errorMessage", "Produk tidak ditemukan.");
                 return "redirect:/products";
             }
+        }
+
+        if (categoryId != null) {
+            Category category = categoryService.findByIdAndUser(categoryId, currentUser);
+            if (category == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Kategori tidak valid.");
+                return "redirect:/products";
+            }
+            product.setCategory(category);
+        } else {
+            product.setCategory(null);
         }
 
         product.setOwner(currentUser);

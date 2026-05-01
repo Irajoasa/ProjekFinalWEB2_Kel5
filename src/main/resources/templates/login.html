@@ -1,61 +1,62 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Product CRUD</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:block th:replace="~{fragments/layout :: header}"></head>
+<body class="min-h-screen bg-slate-100">
 
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="w-full max-w-md bg-white shadow-xl rounded-xl p-8">
-        <h2 class="text-2xl font-bold text-center mb-6">
-            Login
-        </h2>
-            <div th:if="${param.logout}"
-                class="bg-blue-100 text-blue-700 p-3 rounded mb-4">
-                Berhasil Logout.
-            </div>
+<main class="flex min-h-screen items-center justify-center px-4 py-10">
+    <section class="w-full max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <div class="mb-8 text-center">
+            <h1 class="text-2xl font-bold text-slate-950">Login</h1>
+            <p class="mt-2 text-sm text-slate-500">Masuk untuk mengelola produk dan kategori.</p>
+        </div>
+
+        <div th:if="${param.logout}" class="mb-4 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-700">
+            Berhasil logout.
+        </div>
+
+        <div th:if="${param.error}" class="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+            Username atau password salah.
+        </div>
 
         <div th:if="${success}"
-             class="bg-green-100 text-green-700 p-3 rounded mb-4"
-            th:text="${success}">
+             class="mb-4 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700"
+             th:text="${success}">
         </div>
+
         <form th:action="@{/login}" method="post" class="space-y-4">
             <div>
-                <label class="block mb-1 font-medium">
-                    Username
-                </label>
-                <input type ="text"
+                <label for="username" class="mb-1 block text-sm font-medium text-slate-700">Username</label>
+                <input id="username"
+                       type="text"
                        name="username"
-                       required autofocus
+                       required
+                       autofocus
                        placeholder="Masukkan username"
-                       class="w-full border rounded-lg px-3 py-2 focus:ring-2-blue-500 outline-none">
-
+                       class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-200">
             </div>
+
             <div>
-                <label class="block mb-1 font-medium">
-                    Password
-                </label>
-                <input type ="password"
+                <label for="password" class="mb-1 block text-sm font-medium text-slate-700">Password</label>
+                <input id="password"
+                       type="password"
                        name="password"
-                       required autofocus
-                       placeholder="Masukkan username"
-                       class="w-full border rounded-lg px-3 py-2 focus:ring-2-blue-500 outline-none">
-
+                       required
+                       placeholder="Masukkan password"
+                       class="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-200">
             </div>
+
             <button type="submit"
-                    class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transtion">
+                    class="w-full rounded-lg bg-slate-900 px-4 py-2.5 font-semibold text-white hover:bg-slate-700">
                 Login
             </button>
         </form>
-        <p class="text-center text-sm mt-5">
+
+        <p class="mt-6 text-center text-sm text-slate-500">
             Belum punya akun?
-            <a th:href="@{/register}"
-               class="text-blue-600 hover:underline">
-                Daftar dissini
-            </a>
+            <a th:href="@{/register}" class="font-semibold text-slate-900 hover:underline">Daftar di sini</a>
         </p>
-    </div>
+    </section>
+</main>
+
 </body>
 </html>

@@ -26,6 +26,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Page<Product> findByOwnerAndCategory(User owner, Category category, Pageable pageable);
 
+    List<Product> findAllByOwnerAndCategory(User owner, Category category);
+
     Page<Product> findByOwnerAndNameContainingIgnoreCaseAndCategory(User owner, String name, Category category, Pageable pageable);
 
     long countByOwner(User owner);

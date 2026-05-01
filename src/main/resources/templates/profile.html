@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:block th:replace="~{fragments/layout :: header}"></head>
+<body class="bg-gray-100">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="max-w-4xl mx-auto px-4 pb-10">
+    <div th:if="${successMessage}"
+         class="bg-green-100 text-green-700 p-3 rounded mb-4"
+         th:text="${successMessage}">
+    </div>
+
+    <section class="bg-white shadow rounded-xl p-6">
+        <div class="flex flex-col md:flex-row gap-6 md:items-center md:justify-between mb-6">
+            <div class="flex items-center gap-4">
+                <div class="w-20 h-20 rounded-full bg-gray-800 text-white flex items-center justify-center text-2xl font-bold overflow-hidden">
+                    <img th:if="${user.profileImageUrl}"
+                         th:src="${user.profileImageUrl}"
+                         alt="Foto profil"
+                         class="w-full h-full object-cover">
+                    <span th:unless="${user.profileImageUrl}"
+                          th:text="${#strings.substring(user.username, 0, 1).toUpperCase()}">U</span>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold"
+                        th:text="${user.fullName != null ? user.fullName : user.username}">
+                        Nama User
+                    </h1>
+                    <p class="text-gray-500" th:text="${'@' + user.username}">@username</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+                <a th:href="@{/profile/edit}"
+                   class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                    Edit Profil
+                </a>
+                <a th:href="@{/change-password}"
+                   class="border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50">
+                    Ganti Password
+                </a>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="border rounded-lg p-4">
+                <p class="text-sm text-gray-500">Email</p>
+                <p class="font-medium" th:text="${user.email != null ? user.email : '-'}">-</p>
+            </div>
+            <div class="border rounded-lg p-4">
+                <p class="text-sm text-gray-500">Nomor HP</p>
+                <p class="font-medium" th:text="${user.phoneNumber != null ? user.phoneNumber : '-'}">-</p>
+            </div>
+            <div class="border rounded-lg p-4 md:col-span-2">
+                <p class="text-sm text-gray-500">Alamat</p>
+                <p class="font-medium" th:text="${user.address != null ? user.address : '-'}">-</p>
+            </div>
+            <div class="border rounded-lg p-4 md:col-span-2">
+                <p class="text-sm text-gray-500">Bio</p>
+                <p class="font-medium whitespace-pre-line" th:text="${user.bio != null ? user.bio : '-'}">-</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

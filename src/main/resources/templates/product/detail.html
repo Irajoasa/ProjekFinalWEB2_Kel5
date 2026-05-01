@@ -1,49 +1,52 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:block th:replace="~{fragments/layout :: header}"></head>
+<body class="min-h-screen bg-slate-100 text-slate-900">
 
-<head th:replace="~{fragments/layout :: header}"></head>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<body class="bg-slate-50 text-slate-900">
-
-<div th:replace="~{fragments/layout :: navbar}"></div>
-
-<main class="max-w-4xl mx-auto px-4 py-12">
-    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden text-left">
-        <div class="bg-slate-800 p-8 text-white">
-            <p class="text-indigo-400 font-bold text-sm uppercase tracking-widest mb-2"
-               th:text="${product.category?.displayName}">KATEGORI</p>
-            <h1 class="text-4xl font-black" th:text="${product.name}">Nama Produk</h1>
+<main class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:py-10">
+    <section class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div class="bg-slate-900 p-6 text-white sm:p-8">
+            <p class="text-sm font-semibold uppercase text-slate-300"
+               th:text="${product.category != null ? product.category.name : '-'}">KATEGORI</p>
+            <h1 class="mt-2 text-3xl font-bold sm:text-4xl" th:text="${product.name}">Nama Produk</h1>
         </div>
 
-        <div class="p-8 grid md:grid-cols-2 gap-8">
-            <div class="space-y-6">
-                <div>
-                    <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider">Harga Satuan</h3>
-                    <p class="text-3xl font-black text-indigo-600"
+        <div class="grid gap-6 p-6 sm:p-8 md:grid-cols-2">
+            <div class="space-y-5">
+                <div class="rounded-lg border border-slate-200 p-4">
+                    <h3 class="text-xs font-semibold uppercase text-slate-500">Harga Satuan</h3>
+                    <p class="mt-2 text-3xl font-bold text-slate-950"
                        th:text="${'Rp ' + #numbers.formatDecimal(product.price ?: 0, 0, 'POINT', 0, 'COMMA')}">Rp 0</p>
                 </div>
-                <div>
-                    <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider">Status Stok</h3>
-                    <p class="text-xl font-bold" th:text="${(product.stock ?: 0) + ' Unit Tersedia'}">0 Unit</p>
+                <div class="rounded-lg border border-slate-200 p-4">
+                    <h3 class="text-xs font-semibold uppercase text-slate-500">Status Stok</h3>
+                    <p class="mt-2 text-xl font-bold text-slate-950" th:text="${(product.stock ?: 0) + ' Unit Tersedia'}">0 Unit</p>
                 </div>
             </div>
-            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                <h3 class="text-slate-400 text-xs font-bold uppercase mb-3">Deskripsi Produk</h3>
-                <p class="text-slate-600 leading-relaxed italic"
+
+            <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                <h3 class="text-xs font-semibold uppercase text-slate-500">Deskripsi Produk</h3>
+                <p class="mt-3 whitespace-pre-line text-slate-600"
                    th:text="${product.description ?: 'Tidak ada deskripsi.'}">Deskripsi...</p>
             </div>
         </div>
 
-        <div class="px-8 py-6 bg-slate-50 border-t border-slate-100 flex gap-4">
+        <div class="flex flex-col gap-2 border-t border-slate-200 bg-slate-50 px-6 py-5 sm:flex-row sm:px-8">
             <a th:href="@{/products/{id}/edit(id=${product.id})}"
-               class="bg-indigo-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-indigo-700 transition">Edit Produk</a>
+               class="rounded-lg bg-slate-900 px-5 py-2.5 text-center text-sm font-semibold text-white hover:bg-slate-700">
+                Edit Produk
+            </a>
             <a th:href="@{/products}"
-               class="bg-white text-slate-700 border border-slate-300 px-6 py-2 rounded-xl font-bold hover:bg-slate-50 transition text-decoration-none">Kembali</a>
+               class="rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                Kembali
+            </a>
         </div>
-    </div>
+    </section>
 </main>
 
-<div th:replace="~{fragments/layout :: footer}"></div>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 
 </body>
 </html>

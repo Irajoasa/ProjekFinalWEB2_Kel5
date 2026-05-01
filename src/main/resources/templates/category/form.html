@@ -1,45 +1,59 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Tambah/Edit Produk</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 p-8">
-<div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-4">Form Produk</h2>
 
-    <form th:action="@{/products/save}" th:object="${product}" method="POST">
-        <input type="hidden" th:field="*{id}">
+<head th:replace="~{fragments/layout :: header}"></head>
 
-        <div class="mb-4">
-            <label class="block text-sm font-bold mb-2">Nama Produk</label>
-            <input type="text" th:field="*{name}" class="w-full border p-2 rounded" required>
+<body class="bg-slate-50 text-slate-900">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="max-w-xl mx-auto px-6 py-12">
+    <div class="bg-white shadow rounded-2xl p-8 border">
+        <h2 class="text-2xl font-bold mb-6"
+            th:text="${category.id != null} ? 'Edit Kategori' : 'Tambah Kategori'">
+            Form Kategori
+        </h2>
+
+        <div th:if="${errorMessage}"
+             class="mb-5 rounded-lg bg-red-100 px-4 py-3 text-red-700"
+             th:text="${errorMessage}">
+            Error
         </div>
 
-        <div class="mb-4">
-            <label class="block text-sm font-bold mb-2">Harga</label>
-            <input type="number" th:field="*{price}" class="w-full border p-2 rounded" required>
-        </div>
+        <form th:action="@{/categories/save}" th:object="${category}" method="post" class="space-y-5">
+            <input type="hidden" th:field="*{id}">
 
-        <div class="mb-4">
-            <label class="block text-sm font-bold mb-2">Stok</label>
-            <input type="number" th:field="*{stock}" class="w-full border p-2 rounded" required>
-        </div>
+            <div>
+                <label class="block text-sm font-semibold mb-1">Nama Kategori</label>
+                <input type="text" th:field="*{name}"
+                       class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-indigo-200"
+                       required>
+            </div>
 
-        <div class="mb-4">
-            <label class="block text-sm font-bold mb-2">Kategori</label>
-            <select th:field="*{category}" class="w-full border p-2 rounded">
-                <option th:each="cat : ${categories}"
-                        th:value="${cat.id}"
-                        th:text="${cat.displayName}"></option>
-            </select>
-        </div>
+            <div>
+                <label class="block text-sm font-semibold mb-1">Deskripsi</label>
+                <textarea th:field="*{description}"
+                          class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-indigo-200"
+                          rows="4"
+                          placeholder="Opsional"></textarea>
+            </div>
 
-        <div class="flex gap-2">
-            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Simpan Produk</button>
-            <a th:href="@{/products}" class="bg-gray-500 text-white px-4 py-2 rounded">Batal</a>
-        </div>
-    </form>
-</div>
+            <div class="flex gap-3 pt-4">
+                <button type="submit"
+                        class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-indigo-700">
+                    Simpan
+                </button>
+
+                <a th:href="@{/categories}"
+                   class="border px-6 py-2 rounded-lg hover:bg-slate-100">
+                    Batal
+                </a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+
 </body>
 </html>

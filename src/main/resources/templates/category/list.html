@@ -1,57 +1,78 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Daftar Produk</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 p-8">
 
-<div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md">
+<head th:replace="~{fragments/layout :: header}"></head>
+
+<body class="bg-slate-50">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="max-w-4xl mx-auto px-6 py-12">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Daftar Produk</h1>
-        <a th:href="@{/products/new}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-            + Tambah Produk
+        <h2 class="text-3xl font-bold">Daftar Kategori</h2>
+
+        <a th:href="@{/categories/new}"
+           class="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700">
+            + Tambah Kategori
         </a>
     </div>
 
-    <div class="overflow-x-auto">
-        <table class="w-full border-collapse border border-gray-200">
-            <thead>
-            <tr class="bg-gray-100">
-                <th class="border border-gray-200 px-4 py-2 text-left">ID</th>
-                <th class="border border-gray-200 px-4 py-2 text-left">Nama Produk</th>
-                <th class="border border-gray-200 px-4 py-2 text-left">Kategori</th>
-                <th class="border border-gray-200 px-4 py-2 text-left">Stok</th>
-                <th class="border border-gray-200 px-4 py-2 text-center">Aksi</th>
+    <div th:if="${successMessage}"
+         class="mb-5 rounded-lg bg-green-100 px-4 py-3 text-green-700"
+         th:text="${successMessage}">
+        Sukses
+    </div>
+
+    <div th:if="${errorMessage}"
+         class="mb-5 rounded-lg bg-red-100 px-4 py-3 text-red-700"
+         th:text="${errorMessage}">
+        Error
+    </div>
+
+    <div th:if="${!#lists.isEmpty(categories)}" class="bg-white rounded-xl shadow overflow-hidden">
+        <table class="min-w-full">
+            <thead class="bg-slate-800 text-white">
+            <tr>
+                <th class="p-3 text-left">Nama</th>
+                <th class="p-3 text-left">Deskripsi</th>
+                <th class="p-3 text-left">Aksi</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="p : ${products}" class="hover:bg-gray-50">
-                <td class="border border-gray-200 px-4 py-2" th:text="${p.id}"></td>
-                <td class="border border-gray-200 px-4 py-2 font-medium" th:text="${p.name}"></td>
-                <td class="border border-gray-200 px-4 py-2" th:text="${p.category != null ? p.category.displayName : '-'}"></td>
-                <td class="border border-gray-200 px-4 py-2" th:text="${p.stock}"></td>
-                <td class="border border-gray-200 px-4 py-2 text-center">
-                    <a th:href="@{/products/{id}/edit(id=${p.id})}" class="text-blue-600 hover:underline">Edit</a>
-
-                    <form th:action="@{/products/{id}/delete(id=${p.id})}" method="POST" class="inline ml-3">
-                        <button type="submit" class="text-red-600 hover:underline" onclick="return confirm('Yakin hapus?')">
+            <tr th:each="category : ${categories}" class="border-t hover:bg-slate-50">
+                <td class="p-3 font-semibold" th:text="${category.name}">Nama kategori</td>
+                <td class="p-3 text-slate-600"
+                    th:text="${category.description != null and !category.description.isBlank() ? category.description : '-'}">
+                    Deskripsi
+                </td>
+                <td class="p-3">
+                    <a th:href="@{/categories/{id}/edit(id=${category.id})}"
+                       class="text-yellow-600 font-semibold">Edit</a>
+                    <form th:action="@{/categories/{id}/delete(id=${category.id})}"
+                          method="post"
+                          class="inline ml-3"
+                          onsubmit="return confirm('Yakin hapus kategori ini?')">
+                        <button type="submit" class="text-red-600 font-semibold">
                             Hapus
                         </button>
                     </form>
                 </td>
             </tr>
-            <tr th:if="${#lists.isEmpty(products)}">
-                <td colspan="5" class="text-center py-4 text-gray-500 italic">Belum ada produk.</td>
-            </tr>
             </tbody>
         </table>
     </div>
 
-    <div class="mt-6">
-        <a th:href="@{/}" class="text-gray-600 hover:text-gray-800 underline text-sm"> Kembali ke Dashboard</a>
+    <div th:if="${#lists.isEmpty(categories)}"
+         class="bg-white rounded-xl shadow p-10 text-center text-slate-500">
+        <p class="mb-4">Belum ada kategori.</p>
+        <a th:href="@{/categories/new}"
+           class="inline-block bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+            Tambah Kategori Pertama
+        </a>
     </div>
-</div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
 
 </body>
 </html>

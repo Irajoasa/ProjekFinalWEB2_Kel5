@@ -2,102 +2,106 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<!-- ================= HEADER ================= -->
 <head th:fragment="header">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product CRUD</title>
-
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 
+<nav th:fragment="navbar" class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
+        <a th:href="@{/}" class="text-lg font-bold text-slate-900">Product CRUD</a>
 
-<!-- ================= NAVBAR ================= -->
-<nav th:fragment="navbar"
-     class="bg-slate-800 text-white shadow">
+        <button type="button"
+                class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 md:hidden"
+                onclick="toggleMobileMenu()">
+            Menu
+        </button>
 
-    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-
-        <!-- Logo -->
-        <a th:href="@{/}" class="text-xl font-bold tracking-wide">
-            Product CRUD
-        </a>
-
-        <!-- Menu -->
-        <div class="space-x-6 hidden md:flex">
-            <a th:href="@{/}" class="hover:text-slate-300">Home</a>
-            <a th:href="@{/products}" class="hover:text-slate-300">Products</a>
-            <a th:href="@{/categories}" class="hover:text-slate-300">Category</a>
+        <div class="hidden items-center gap-6 md:flex">
+            <a th:href="@{/}" class="text-sm font-medium text-slate-600 hover:text-slate-950">Home</a>
+            <a th:href="@{/products}" class="text-sm font-medium text-slate-600 hover:text-slate-950">Products</a>
+            <a th:href="@{/categories}" class="text-sm font-medium text-slate-600 hover:text-slate-950">Category</a>
         </div>
 
-        <!-- User Dropdown -->
-        <div class="relative" sec:authorize="isAuthenticated()">
-
-            <button onclick="toggleDropdown()"
-                    class="bg-slate-700 px-4 py-2 rounded-lg hover:bg-slate-600 transition">
+        <div class="relative hidden md:block" sec:authorize="isAuthenticated()">
+            <button type="button"
+                    onclick="toggleDropdown()"
+                    class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">
                 Halo, <span th:text="${#authentication.name}">User</span>
             </button>
 
             <div id="dropdownMenu"
-                 class="hidden absolute right-0 mt-2 w-48 bg-white text-slate-800 rounded-xl shadow-lg overflow-hidden">
-
-                <a th:href="@{/profile}"
-                   class="block px-4 py-2 hover:bg-slate-100">
-                    Lihat Profil
-                </a>
-
-                <a th:href="@{/profile}"
-                   class="block px-4 py-2 hover:bg-slate-100">
-                    Edit Profil
-                </a>
-
-                <div class="border-t"></div>
-
+                 class="hidden absolute right-0 mt-2 w-52 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
+                <a th:href="@{/profile}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Lihat Profil</a>
+                <a th:href="@{/profile/edit}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Edit Profil</a>
+                <a th:href="@{/change-password}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Ganti Password</a>
+                <div class="border-t border-slate-200"></div>
                 <form th:action="@{/logout}" method="post">
-                    <button type="submit"
-                            class="w-full text-left px-4 py-2 hover:bg-red-100 text-red-600">
+                    <button type="submit" class="w-full px-4 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50">
                         Logout
                     </button>
                 </form>
             </div>
-
         </div>
+    </div>
 
+    <div id="mobileMenu" class="hidden border-t border-slate-200 bg-white px-4 py-3 md:hidden">
+        <div class="flex flex-col gap-2">
+            <a th:href="@{/}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">Home</a>
+            <a th:href="@{/products}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">Products</a>
+            <a th:href="@{/categories}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">Category</a>
+            <a th:href="@{/profile}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">Profile</a>
+            <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
+                <button type="submit" class="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50">
+                    Logout
+                </button>
+            </form>
+        </div>
     </div>
 </nav>
 
-
-<!-- ================= FOOTER ================= -->
-<footer th:fragment="footer"
-        class="mt-16 border-t bg-white">
-
-    <div class="max-w-7xl mx-auto px-6 py-6 text-center text-slate-500">
+<footer th:fragment="footer" class="mt-16 border-t border-slate-200 bg-white">
+    <div class="mx-auto max-w-7xl px-4 py-6 text-center text-sm text-slate-500 sm:px-6">
         Product CRUD - Praktikum JPA Fundamental - 2026
     </div>
 
-    <!-- Dropdown Script -->
     <script>
         function toggleDropdown() {
-            document
-                .getElementById("dropdownMenu")
-                .classList.toggle("hidden");
+            const menu = document.getElementById("dropdownMenu");
+            if (menu) {
+                menu.classList.toggle("hidden");
+            }
         }
 
-        window.addEventListener("click", function (e) {
+        function toggleMobileMenu() {
+            const menu = document.getElementById("mobileMenu");
+            if (menu) {
+                menu.classList.toggle("hidden");
+            }
+        }
 
-            const button = document.querySelector(
-                "button[onclick='toggleDropdown()']"
-            );
-
+        window.addEventListener("click", function (event) {
+            const button = document.querySelector("button[onclick='toggleDropdown()']");
             const menu = document.getElementById("dropdownMenu");
 
-            if (!button.contains(e.target) && !menu.contains(e.target)) {
+            if (button && menu && !button.contains(event.target) && !menu.contains(event.target)) {
                 menu.classList.add("hidden");
             }
         });
     </script>
-
 </footer>
 
 </html>
