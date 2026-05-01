@@ -25,7 +25,7 @@ public class ProductController {
 
     private final ProductService productService;
     private final UserRepository userRepository;
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
     public ProductController(ProductService productService, UserRepository userRepository, CategoryService categoryService) {
         this.productService = productService;
@@ -45,7 +45,7 @@ public class ProductController {
                                Model model) {
         User currentUser = getCurrentUser(userDetails);
         String normalizedKeyword = keyword == null ? "" : keyword.trim();
-        Category selectedCategory = (category !=null)? categoryService.findById(Long.valueOf(category)): null;
+        Category selectedCategory = (category !=null)? categoryService.findByIdAndUser(Long.valueOf(category), currentUser): null;
         int currentPage = Math.max(page, 0);
         PageRequest pageable = PageRequest.of(currentPage, 10, Sort.by(Sort.Direction.DESC, "id"));
         Page<Product> productPage = productService.findAllByOwnerAndFilters(
@@ -73,18 +73,20 @@ public class ProductController {
         model.addAttribute("startItem", startItem);
         model.addAttribute("endItem", endItem);
         model.addAttribute("totalItems", productPage.getTotalElements());
-        model.addAttribute("categories", categoryService.findAll());
+        model.addAttribute("categories", categoryService.findAllByUser(currentUser));
         model.addAttribute("keyword", normalizedKeyword);
         model.addAttribute("selectedCategory", selectedCategory == null ? null : category);
         model.addAttribute("hasFilter", !normalizedKeyword.isBlank() || selectedCategory != null);
         return "product/list";
     }
     @GetMapping("/products/new")
-    public String showCreateForm(Model model) {
+    public String showCreateForm(Model model, @AuthenticationPrincipal UserDetails userDetails) {
         Product product = new Product();
         product.setCreatedAt(LocalDate.now());
         model.addAttribute("product", product);
-        model.addAttribute("categories", categoryService.findAll());
+
+        User currentUser = getCurrentUser(userDetails);
+        model.addAttribute("categories", categoryService.findAllByUser(currentUser));
         return "product/form";
     }
 
@@ -123,7 +125,7 @@ public class ProductController {
         model.addAttribute("categoryStats", categoryStats);
         model.addAttribute("lowStockProducts", lowStockProducts);
         model.addAttribute("isEmptyProducts", totalProducts == 0);
-        return "index";
+        return "product/index";
     }
 
     @PostMapping("/products/save")
@@ -155,7 +157,7 @@ public class ProductController {
         return productService.findByIdAndOwner(id, currentUser)
                 .map(product -> {
                     model.addAttribute("product", product);
-                    model.addAttribute("categories", categoryService.findAll());
+                    model.addAttribute("categories", categoryService.findAllByUser(currentUser));
                     return "product/form";
                 })
                 .orElseGet(() -> {

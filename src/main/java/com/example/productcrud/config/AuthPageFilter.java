@@ -27,7 +27,7 @@ public class AuthPageFilter extends OncePerRequestFilter {
             if (authentication != null
                     && authentication.isAuthenticated()
                     && !(authentication instanceof AnonymousAuthenticationToken)) {
-                response.sendRedirect("/");
+                response.sendRedirect("/products");
                 return;
             }
         }

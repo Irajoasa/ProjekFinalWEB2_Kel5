@@ -1,5 +1,6 @@
 package com.example.productcrud.service;
 
+import com.example.productcrud.model.User;
 import com.example.productcrud.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 import com.example.productcrud.model.Category;
@@ -12,22 +13,27 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     public CategoryService(CategoryRepository categoryRepository) {
+
         this.categoryRepository = categoryRepository;
     }
 
-    public List<Category> findAll(){
-        return categoryRepository.findAll();
+    public List<Category> findAllByUser (User user) {
+        return categoryRepository.findByUser(user);
     }
 
-    public Category save(Category category){
+    public Category save(Category category, User user) {
+        category.setUser(user);
         return categoryRepository.save(category);
     }
 
-    public Category findById(Long id){
-        return categoryRepository.findById(id).orElse(null);
-    }
+    public Category findByIdAndUser(Long id, User user) {
 
-    public void delete(Long id){
-        categoryRepository.deleteById(id);
+        return categoryRepository.findByIdAndUser(id, user);
+    }
+    public void delete(Long id, User user) {
+        Category category = categoryRepository.findByIdAndUser(id, user);
+        if (category != null) {
+            categoryRepository.delete(category);
+        }
     }
 }

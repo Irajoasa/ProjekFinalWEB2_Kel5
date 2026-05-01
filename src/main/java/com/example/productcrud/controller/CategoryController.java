@@ -1,29 +1,40 @@
 package com.example.productcrud.controller;
 
+import com.example.productcrud.model.User;
+import com.example.productcrud.repository.CategoryRepository;
+import com.example.productcrud.repository.UserRepository;
 import com.example.productcrud.service.CategoryService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.example.productcrud.model.Category;
+import org.springframework.security.core.Authentication;
 @Controller
 @RequestMapping("/categories")
 public class CategoryController {
 
     private final CategoryService categoryService;
+    private final UserRepository userRepository;
 
-    public CategoryController(CategoryService categoryService){
+    public CategoryController(CategoryService categoryService, UserRepository userRepository) {
         this.categoryService = categoryService;
+        this.userRepository = userRepository;
+    }
+    private User getCurrentUser (Authentication authentication) {
+        String username = authentication.getName(); // Ambil nama pengguna yang sedang login
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Pengguna tidak ditemukan"));
     }
 
-    // LIST
+
     @GetMapping
-    public String list(Model model){
-        model.addAttribute("categories",
-                categoryService.findAll());
+    public String list(Model model, Authentication authentication) {
+        User currentUser = getCurrentUser(authentication);
+        model.addAttribute("categories" , categoryService.findAllByUser(currentUser));
         return "category/list";
     }
 
-    // FORM CREATE
+
     @GetMapping("/new")
     public String createForm(Model model){
         model.addAttribute("category",
@@ -31,25 +42,32 @@ public class CategoryController {
         return "category/form";
     }
 
-    // SAVE
+
     @PostMapping("/save")
-    public String save(@ModelAttribute Category category){
-        categoryService.save(category);
+    public String save(@ModelAttribute Category category, Authentication authentication){
+        User currentUser = getCurrentUser(authentication);
+        categoryService.save(category, currentUser);
         return "redirect:/categories";
     }
 
-    // EDIT
+
     @GetMapping("/{id}/edit")
-    public String edit(@PathVariable Long id, Model model){
-        model.addAttribute("category",
-                categoryService.findById(id));
-        return "category/form";
+    public String edit(@PathVariable Long id, Model model, Authentication authentication){
+        User currentUser = getCurrentUser(authentication);
+        Category category = categoryService.findByIdAndUser(id, currentUser);
+
+            if (category == null) {
+                return "redirect:/categories";
+            }
+
+            model.addAttribute("category", category);
+            return "category/form";
     }
 
-    // DELETE
-    @GetMapping("/{id}/delete")
-    public String delete(@PathVariable Long id){
-        categoryService.delete(id);
-        return "redirect:/categories";
-    }
+        @GetMapping("/{id}/delete")
+        public String delete(@PathVariable Long id, Authentication authentication) {
+            User currentUser = getCurrentUser(authentication);
+            categoryService.delete(id, currentUser);
+            return "redirect:/categories";
+        }
 }
